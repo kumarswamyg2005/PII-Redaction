@@ -1,0 +1,20 @@
+# Core document handling
+python-docx>=1.1.0
+lxml>=5.0.0
+Pillow>=10.0.0
+numpy>=1.26.0
+
+# Detection: Presidio orchestration + zero-shot NER + spaCy tokenisation
+presidio-analyzer>=2.2.0
+gliner>=0.2.13
+spacy>=3.7.0
+
+# Image redaction: OCR, QR and face detection (implemented directly on
+# Pillow + OpenCV; presidio-image-redactor is not used and would pull in
+# Azure Form Recognizer, pydicom and a second OpenCV build)
+pytesseract>=0.3.13
+opencv-python-headless>=4.9.0
+
+# Web front end
+flask>=3.0.0
+gunicorn>=21.2.0

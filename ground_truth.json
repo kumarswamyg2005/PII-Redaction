@@ -1,0 +1,898 @@
+{
+  "document": "Red Herring Prospectus.docx",
+  "region": {
+    "start": 0,
+    "end": 46595
+  },
+  "note": "Annotated exhaustively over the region: every PII instance in this character range is listed, so an unmatched detection inside it is a true false positive. Entity types and offsets only \u2014 the literal values are held out of version control because a ground truth for a redaction task is itself a PII disclosure.",
+  "annotations": [
+    {
+      "type": "ORGANIZATION",
+      "start": 182,
+      "end": 207,
+      "length": 25
+    },
+    {
+      "type": "CORPORATE_ID",
+      "start": 235,
+      "end": 256,
+      "length": 21
+    },
+    {
+      "type": "LOCATION",
+      "start": 356,
+      "end": 373,
+      "length": 17
+    },
+    {
+      "type": "LOCATION",
+      "start": 443,
+      "end": 467,
+      "length": 24
+    },
+    {
+      "type": "PERSON",
+      "start": 527,
+      "end": 544,
+      "length": 17
+    },
+    {
+      "type": "EMAIL_ADDRESS",
+      "start": 593,
+      "end": 624,
+      "length": 31
+    },
+    {
+      "type": "PHONE_NUMBER",
+      "start": 636,
+      "end": 652,
+      "length": 16
+    },
+    {
+      "type": "WEB_ADDRESS",
+      "start": 653,
+      "end": 678,
+      "length": 25
+    },
+    {
+      "type": "PERSON",
+      "start": 694,
+      "end": 715,
+      "length": 21
+    },
+    {
+      "type": "PERSON",
+      "start": 717,
+      "end": 736,
+      "length": 19
+    },
+    {
+      "type": "PERSON",
+      "start": 738,
+      "end": 757,
+      "length": 19
+    },
+    {
+      "type": "PERSON",
+      "start": 759,
+      "end": 777,
+      "length": 18
+    },
+    {
+      "type": "PERSON",
+      "start": 779,
+      "end": 798,
+      "length": 19
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 800,
+      "end": 823,
+      "length": 23
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 825,
+      "end": 845,
+      "length": 20
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 847,
+      "end": 866,
+      "length": 19
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 868,
+      "end": 886,
+      "length": 18
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 888,
+      "end": 910,
+      "length": 22
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 912,
+      "end": 937,
+      "length": 25
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 942,
+      "end": 985,
+      "length": 43
+    },
+    {
+      "type": "PERSON",
+      "start": 2209,
+      "end": 2230,
+      "length": 21
+    },
+    {
+      "type": "PERSON",
+      "start": 2274,
+      "end": 2293,
+      "length": 19
+    },
+    {
+      "type": "PERSON",
+      "start": 2335,
+      "end": 2354,
+      "length": 19
+    },
+    {
+      "type": "PERSON",
+      "start": 2396,
+      "end": 2414,
+      "length": 18
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 2473,
+      "end": 2493,
+      "length": 20
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 6371,
+      "end": 6402,
+      "length": 31
+    },
+    {
+      "type": "PERSON",
+      "start": 6403,
+      "end": 6414,
+      "length": 11
+    },
+    {
+      "type": "PERSON",
+      "start": 6416,
+      "end": 6430,
+      "length": 14
+    },
+    {
+      "type": "EMAIL_ADDRESS",
+      "start": 6438,
+      "end": 6456,
+      "length": 18
+    },
+    {
+      "type": "PHONE_NUMBER",
+      "start": 6468,
+      "end": 6484,
+      "length": 16
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 6485,
+      "end": 6508,
+      "length": 23
+    },
+    {
+      "type": "PERSON",
+      "start": 6509,
+      "end": 6523,
+      "length": 14
+    },
+    {
+      "type": "PERSON",
+      "start": 6525,
+      "end": 6538,
+      "length": 13
+    },
+    {
+      "type": "EMAIL_ADDRESS",
+      "start": 6546,
+      "end": 6569,
+      "length": 23
+    },
+    {
+      "type": "PHONE_NUMBER",
+      "start": 6581,
+      "end": 6597,
+      "length": 16
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 6678,
+      "end": 6711,
+      "length": 33
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 6722,
+      "end": 6755,
+      "length": 33
+    },
+    {
+      "type": "PERSON",
+      "start": 6757,
+      "end": 6777,
+      "length": 20
+    },
+    {
+      "type": "PHONE_NUMBER",
+      "start": 6789,
+      "end": 6804,
+      "length": 15
+    },
+    {
+      "type": "EMAIL_ADDRESS",
+      "start": 6813,
+      "end": 6850,
+      "length": 37
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 7392,
+      "end": 7417,
+      "length": 25
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 7462,
+      "end": 7502,
+      "length": 40
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 7734,
+      "end": 7774,
+      "length": 40
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 7780,
+      "end": 7813,
+      "length": 33
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 8947,
+      "end": 8972,
+      "length": 25
+    },
+    {
+      "type": "CORPORATE_ID",
+      "start": 9293,
+      "end": 9314,
+      "length": 21
+    },
+    {
+      "type": "LOCATION",
+      "start": 9355,
+      "end": 9372,
+      "length": 17
+    },
+    {
+      "type": "LOCATION",
+      "start": 9464,
+      "end": 9488,
+      "length": 24
+    },
+    {
+      "type": "PERSON",
+      "start": 9567,
+      "end": 9584,
+      "length": 17
+    },
+    {
+      "type": "PHONE_NUMBER",
+      "start": 9639,
+      "end": 9656,
+      "length": 17
+    },
+    {
+      "type": "EMAIL_ADDRESS",
+      "start": 9666,
+      "end": 9697,
+      "length": 31
+    },
+    {
+      "type": "WEB_ADDRESS",
+      "start": 9708,
+      "end": 9732,
+      "length": 24
+    },
+    {
+      "type": "PERSON",
+      "start": 9748,
+      "end": 9769,
+      "length": 21
+    },
+    {
+      "type": "PERSON",
+      "start": 9771,
+      "end": 9790,
+      "length": 19
+    },
+    {
+      "type": "PERSON",
+      "start": 9792,
+      "end": 9811,
+      "length": 19
+    },
+    {
+      "type": "PERSON",
+      "start": 9813,
+      "end": 9831,
+      "length": 18
+    },
+    {
+      "type": "PERSON",
+      "start": 9833,
+      "end": 9852,
+      "length": 19
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 9854,
+      "end": 9877,
+      "length": 23
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 9879,
+      "end": 9899,
+      "length": 20
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 9901,
+      "end": 9920,
+      "length": 19
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 9922,
+      "end": 9940,
+      "length": 18
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 9942,
+      "end": 9964,
+      "length": 22
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 9966,
+      "end": 9991,
+      "length": 25
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 9996,
+      "end": 10039,
+      "length": 43
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 10137,
+      "end": 10162,
+      "length": 25
+    },
+    {
+      "type": "PERSON",
+      "start": 10675,
+      "end": 10696,
+      "length": 21
+    },
+    {
+      "type": "PERSON",
+      "start": 10786,
+      "end": 10805,
+      "length": 19
+    },
+    {
+      "type": "PERSON",
+      "start": 10893,
+      "end": 10912,
+      "length": 19
+    },
+    {
+      "type": "PERSON",
+      "start": 11003,
+      "end": 11021,
+      "length": 18
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 20609,
+      "end": 20641,
+      "length": 32
+    },
+    {
+      "type": "LOCATION",
+      "start": 20676,
+      "end": 20687,
+      "length": 11
+    },
+    {
+      "type": "EMAIL_ADDRESS",
+      "start": 20796,
+      "end": 20814,
+      "length": 18
+    },
+    {
+      "type": "WEB_ADDRESS",
+      "start": 20824,
+      "end": 20838,
+      "length": 14
+    },
+    {
+      "type": "EMAIL_ADDRESS",
+      "start": 20865,
+      "end": 20894,
+      "length": 29
+    },
+    {
+      "type": "PERSON",
+      "start": 20911,
+      "end": 20922,
+      "length": 11
+    },
+    {
+      "type": "PERSON",
+      "start": 20924,
+      "end": 20938,
+      "length": 14
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 20978,
+      "end": 21002,
+      "length": 24
+    },
+    {
+      "type": "LOCATION",
+      "start": 21003,
+      "end": 21022,
+      "length": 19
+    },
+    {
+      "type": "PHONE_NUMBER",
+      "start": 21099,
+      "end": 21115,
+      "length": 16
+    },
+    {
+      "type": "EMAIL_ADDRESS",
+      "start": 21124,
+      "end": 21147,
+      "length": 23
+    },
+    {
+      "type": "WEB_ADDRESS",
+      "start": 21157,
+      "end": 21180,
+      "length": 23
+    },
+    {
+      "type": "EMAIL_ADDRESS",
+      "start": 21207,
+      "end": 21239,
+      "length": 32
+    },
+    {
+      "type": "PERSON",
+      "start": 21256,
+      "end": 21270,
+      "length": 14
+    },
+    {
+      "type": "PERSON",
+      "start": 21271,
+      "end": 21284,
+      "length": 13
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 21324,
+      "end": 21357,
+      "length": 33
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 21368,
+      "end": 21401,
+      "length": 33
+    },
+    {
+      "type": "LOCATION",
+      "start": 21410,
+      "end": 21421,
+      "length": 11
+    },
+    {
+      "type": "PHONE_NUMBER",
+      "start": 21504,
+      "end": 21519,
+      "length": 15
+    },
+    {
+      "type": "EMAIL_ADDRESS",
+      "start": 21528,
+      "end": 21565,
+      "length": 37
+    },
+    {
+      "type": "WEB_ADDRESS",
+      "start": 21575,
+      "end": 21595,
+      "length": 20
+    },
+    {
+      "type": "EMAIL_ADDRESS",
+      "start": 21623,
+      "end": 21660,
+      "length": 37
+    },
+    {
+      "type": "PERSON",
+      "start": 21677,
+      "end": 21697,
+      "length": 20
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 23550,
+      "end": 23575,
+      "length": 25
+    },
+    {
+      "type": "LOCATION",
+      "start": 23704,
+      "end": 23721,
+      "length": 17
+    },
+    {
+      "type": "LOCATION",
+      "start": 23822,
+      "end": 23846,
+      "length": 24
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 24786,
+      "end": 24811,
+      "length": 25
+    },
+    {
+      "type": "LOCATION",
+      "start": 24935,
+      "end": 24952,
+      "length": 17
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 25466,
+      "end": 25486,
+      "length": 20
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 26109,
+      "end": 26152,
+      "length": 43
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 26286,
+      "end": 26329,
+      "length": 43
+    },
+    {
+      "type": "PERSON",
+      "start": 26669,
+      "end": 26690,
+      "length": 21
+    },
+    {
+      "type": "PERSON",
+      "start": 27269,
+      "end": 27286,
+      "length": 17
+    },
+    {
+      "type": "LOCATION",
+      "start": 27535,
+      "end": 27559,
+      "length": 24
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 27640,
+      "end": 27683,
+      "length": 43
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 28990,
+      "end": 29035,
+      "length": 45
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 29261,
+      "end": 29304,
+      "length": 43
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 29871,
+      "end": 29888,
+      "length": 17
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 29923,
+      "end": 29966,
+      "length": 43
+    },
+    {
+      "type": "PERSON",
+      "start": 30137,
+      "end": 30155,
+      "length": 18
+    },
+    {
+      "type": "PERSON",
+      "start": 30556,
+      "end": 30575,
+      "length": 19
+    },
+    {
+      "type": "PERSON",
+      "start": 31726,
+      "end": 31747,
+      "length": 21
+    },
+    {
+      "type": "PERSON",
+      "start": 31749,
+      "end": 31768,
+      "length": 19
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 31770,
+      "end": 31788,
+      "length": 18
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 31793,
+      "end": 31816,
+      "length": 23
+    },
+    {
+      "type": "PERSON",
+      "start": 32060,
+      "end": 32081,
+      "length": 21
+    },
+    {
+      "type": "PERSON",
+      "start": 32083,
+      "end": 32102,
+      "length": 19
+    },
+    {
+      "type": "PERSON",
+      "start": 32104,
+      "end": 32123,
+      "length": 19
+    },
+    {
+      "type": "PERSON",
+      "start": 32125,
+      "end": 32143,
+      "length": 18
+    },
+    {
+      "type": "PERSON",
+      "start": 32148,
+      "end": 32167,
+      "length": 19
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 32169,
+      "end": 32192,
+      "length": 23
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 32194,
+      "end": 32214,
+      "length": 20
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 32216,
+      "end": 32235,
+      "length": 19
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 32237,
+      "end": 32255,
+      "length": 18
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 32257,
+      "end": 32279,
+      "length": 22
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 32281,
+      "end": 32306,
+      "length": 25
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 32311,
+      "end": 32354,
+      "length": 43
+    },
+    {
+      "type": "PERSON",
+      "start": 32385,
+      "end": 32406,
+      "length": 21
+    },
+    {
+      "type": "PERSON",
+      "start": 32408,
+      "end": 32427,
+      "length": 19
+    },
+    {
+      "type": "PERSON",
+      "start": 32429,
+      "end": 32448,
+      "length": 19
+    },
+    {
+      "type": "PERSON",
+      "start": 32453,
+      "end": 32471,
+      "length": 18
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 32488,
+      "end": 32511,
+      "length": 23
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 32513,
+      "end": 32533,
+      "length": 20
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 32535,
+      "end": 32554,
+      "length": 19
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 32556,
+      "end": 32574,
+      "length": 18
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 32576,
+      "end": 32598,
+      "length": 22
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 32604,
+      "end": 32629,
+      "length": 25
+    },
+    {
+      "type": "PERSON",
+      "start": 32644,
+      "end": 32663,
+      "length": 19
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 32714,
+      "end": 32734,
+      "length": 20
+    },
+    {
+      "type": "PERSON",
+      "start": 32748,
+      "end": 32767,
+      "length": 19
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 32827,
+      "end": 32849,
+      "length": 22
+    },
+    {
+      "type": "LOCATION",
+      "start": 32937,
+      "end": 32954,
+      "length": 17
+    },
+    {
+      "type": "PERSON",
+      "start": 34383,
+      "end": 34401,
+      "length": 18
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 34452,
+      "end": 34471,
+      "length": 19
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 34561,
+      "end": 34586,
+      "length": 25
+    },
+    {
+      "type": "LOCATION",
+      "start": 35811,
+      "end": 35828,
+      "length": 17
+    },
+    {
+      "type": "PERSON",
+      "start": 36111,
+      "end": 36130,
+      "length": 19
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 45470,
+      "end": 45502,
+      "length": 32
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 45507,
+      "end": 45531,
+      "length": 24
+    }
+  ]
+}

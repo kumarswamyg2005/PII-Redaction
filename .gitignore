@@ -1,0 +1,33 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# Runtime artefacts
+uploads/
+outputs/
+tmp/
+
+# The real -> surrogate map is a re-identification key. Never commit it, and
+# never distribute it alongside the redacted document.
+entity_mapping.json
+*mapping*.json
+
+# The literal PII behind the evaluation ground truth. A ground-truth file for a
+# redaction task is itself a PII disclosure; only offsets are committed.
+ground_truth_values.json
+
+# Personal preparation notes, not part of the submission.
+NOTES-for-interview.md
+
+# Source documents may contain real personal data.
+*.pdf
+Red Herring Prospectus.docx
+
+# Local environment
+.env
+
+# Scaler's own assignment brief — their material, not ours to republish
+Enterprise Data - Assignment.docx

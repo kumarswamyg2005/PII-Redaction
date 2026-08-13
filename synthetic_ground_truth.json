@@ -1,0 +1,142 @@
+{
+  "document": "synthetic_test.docx",
+  "region": {
+    "start": 0,
+    "end": 1794
+  },
+  "note": "Generated document; annotations are exact by construction. The whole document is the scored region.",
+  "annotations": [
+    {
+      "type": "ORGANIZATION",
+      "start": 29,
+      "end": 59,
+      "text": "Kalyani Infrastructure Limited"
+    },
+    {
+      "type": "PERSON",
+      "start": 611,
+      "end": 630,
+      "text": "Mrinalini Fernandes"
+    },
+    {
+      "type": "IN_AADHAAR",
+      "start": 655,
+      "end": 669,
+      "text": "5283 7698 9084"
+    },
+    {
+      "type": "IN_PAN",
+      "start": 678,
+      "end": 688,
+      "text": "LISPE2120L"
+    },
+    {
+      "type": "EMAIL_ADDRESS",
+      "start": 699,
+      "end": 735,
+      "text": "mrinalini.fernandes@example-corp.com"
+    },
+    {
+      "type": "PHONE_NUMBER",
+      "start": 748,
+      "end": 763,
+      "text": "+91 84084 21826"
+    },
+    {
+      "type": "PERSON",
+      "start": 765,
+      "end": 778,
+      "text": "Komal Inamdar"
+    },
+    {
+      "type": "IN_AADHAAR",
+      "start": 803,
+      "end": 817,
+      "text": "7001 1811 0061"
+    },
+    {
+      "type": "IN_PAN",
+      "start": 826,
+      "end": 836,
+      "text": "OKJPK5098A"
+    },
+    {
+      "type": "EMAIL_ADDRESS",
+      "start": 847,
+      "end": 877,
+      "text": "komal.inamdar@example-corp.com"
+    },
+    {
+      "type": "PHONE_NUMBER",
+      "start": 890,
+      "end": 905,
+      "text": "+91 72326 87730"
+    },
+    {
+      "type": "PERSON",
+      "start": 907,
+      "end": 925,
+      "text": "Mrinalini Adhikari"
+    },
+    {
+      "type": "IN_AADHAAR",
+      "start": 950,
+      "end": 964,
+      "text": "9311 1067 6879"
+    },
+    {
+      "type": "IN_PAN",
+      "start": 973,
+      "end": 983,
+      "text": "CJFPM6143A"
+    },
+    {
+      "type": "EMAIL_ADDRESS",
+      "start": 994,
+      "end": 1029,
+      "text": "mrinalini.adhikari@example-corp.com"
+    },
+    {
+      "type": "PHONE_NUMBER",
+      "start": 1042,
+      "end": 1057,
+      "text": "+91 91207 46577"
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 1092,
+      "end": 1117,
+      "text": "Suryakiran Alloys Limited"
+    },
+    {
+      "type": "LOCATION",
+      "start": 1138,
+      "end": 1209,
+      "text": "Plot 17, Sector 9, Kharghar, Kothrud, Pune - 411619, Maharashtra, India"
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 1210,
+      "end": 1235,
+      "text": "Nilgiri Logistics Limited"
+    },
+    {
+      "type": "LOCATION",
+      "start": 1256,
+      "end": 1328,
+      "text": "Gat No. 88, Talegaon Dabhade, Wagholi, Pune - 411710, Maharashtra, India"
+    },
+    {
+      "type": "ORGANIZATION",
+      "start": 1329,
+      "end": 1361,
+      "text": "Vantara Textiles Private Limited"
+    },
+    {
+      "type": "LOCATION",
+      "start": 1382,
+      "end": 1453,
+      "text": "Plot 17, Sector 9, Kharghar, Wagholi, Pune - 411230, Maharashtra, India"
+    }
+  ]
+}

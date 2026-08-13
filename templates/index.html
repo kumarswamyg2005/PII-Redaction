@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PII redaction tool</title>
+
+    <style>
+    /* ------------------------------------------------------------------
+       Deliberately plain. This is an internal tool for reviewing a legal
+       document, so it reads like one: system fonts, hairline rules, one
+       accent colour. No web fonts - the page has to work on a laptop
+       tunnelled through ngrok with no outbound network.
+       ------------------------------------------------------------------ */
+
+    :root {
+      --paper:   #ffffff;
+      --bg:      #f5f4f0;
+      --ink:     #1c1c1a;
+      --ink-mid: #56564f;
+      --ink-dim: #85857c;
+      --rule:    #dcdad2;
+      --rule-dk: #c3c0b5;
+      --accent:  #1f4e79;
+      --accent-bg: #eef2f7;
+      --good:    #2f6b4f;
+      --good-bg: #eef4f0;
+      --flag-bg: #fdf8ec;
+      --flag-rule: #e3d6ae;
+      --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+            "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      padding: 2.5rem 1.25rem 4rem;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container { max-width: 820px; margin: 0 auto; }
+
+    /* --- masthead --- */
+    header { border-bottom: 2px solid var(--ink); padding-bottom: 1.1rem; margin-bottom: 2rem; }
+
+    h1 { font-size: 1.7rem; font-weight: 600; letter-spacing: -0.015em; margin-bottom: 0.4rem; }
+
+    .subtitle { font-size: 0.95rem; color: var(--ink-mid); max-width: 60ch; }
+
+    /* --- panels --- */
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      padding: 1.6rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* --- upload --- */
+    .upload-zone {
+      border: 1px dashed var(--rule-dk);
+      border-radius: 3px;
+      padding: 2.2rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      background: #fbfaf7;
+    }
+    .upload-zone:hover, .upload-zone.dragover { border-color: var(--accent); background: var(--accent-bg); }
+
+    .upload-icon { display: none; }
+
+    .upload-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.3rem; }
+    .upload-desc  { font-size: 0.875rem; color: var(--ink-dim); margin-bottom: 1rem; }
+
+    .file-types { display: inline-flex; gap: 0.4rem; }
+    .chip {
+      font: 500 11px/1.7 var(--mono);
+      padding: 0 0.45rem;
+      border: 1px solid var(--rule-dk);
+      border-radius: 2px;
+      color: var(--ink-mid);
+      background: var(--paper);
+    }
+
+    input[type="file"] { display: none; }
+
+    .file-preview {
+      display: none; align-items: center; justify-content: space-between;
+      border: 1px solid var(--rule); border-left: 3px solid var(--accent);
+      border-radius: 3px; padding: 0.7rem 0.9rem; margin-top: 1rem; background: #fbfaf7;
+    }
+    .file-info { display: flex; align-items: center; gap: 0.75rem; }
+    .file-icon-badge {
+      font: 500 10px/1 var(--mono); letter-spacing: 0.06em;
+      color: var(--ink-dim); border: 1px solid var(--rule-dk);
+      border-radius: 2px; padding: 0.3rem 0.35rem;
+    }
+    .file-name { font-weight: 600; font-size: 0.9rem; }
+    .file-size { font: 12px var(--mono); color: var(--ink-dim); }
+
+    .btn-remove {
+      background: none; border: none; color: var(--ink-dim);
+      cursor: pointer; padding: 0.25rem; line-height: 0;
+    }
+    .btn-remove:hover { color: #a33; }
+
+    /* --- buttons --- */
+    .btn-submit {
+      width: 100%; margin-top: 1.1rem; padding: 0.7rem;
+      background: var(--accent); color: #fff;
+      border: 1px solid var(--accent); border-radius: 3px;
+      font-size: 0.925rem; font-weight: 600; font-family: inherit; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    }
+    .btn-submit:hover:not(:disabled) { background: #17395a; }
+    .btn-submit:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .btn-download {
+      width: 100%; padding: 0.7rem; margin-top: 0.25rem;
+      background: var(--good); color: #fff; text-decoration: none;
+      border: 1px solid var(--good); border-radius: 3px;
+      font-weight: 600; font-size: 0.925rem;
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    }
+    .btn-download:hover { background: #255840; }
+
+    .btn-reset {
+      background: none; border: 1px solid var(--rule-dk); color: var(--ink-mid);
+      padding: 0.55rem; border-radius: 3px; cursor: pointer;
+      font-weight: 500; font-size: 0.875rem; font-family: inherit;
+    }
+    .btn-reset:hover { background: #f0efea; color: var(--ink); }
+
+    /* --- progress --- */
+    .processing-state { display: none; text-align: center; padding: 2rem 0; }
+
+    .spinner {
+      width: 22px; height: 22px; margin: 0 auto 1rem;
+      border: 2px solid var(--rule-dk); border-top-color: var(--accent);
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .status-msg { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.2rem; }
+    .status-sub { font-size: 0.85rem; color: var(--ink-dim); }
+
+    /* --- notes --- */
+    .policy-note {
+      background: var(--flag-bg);
+      border: 1px solid var(--flag-rule);
+      border-radius: 3px;
+      padding: 0.8rem 0.95rem;
+      margin-top: 1rem;
+      color: var(--ink-mid);
+      font-size: 0.85rem;
+      line-height: 1.55;
+    }
+    .policy-note strong { color: var(--ink); }
+
+    /* --- results --- */
+    .result-state { display: none; flex-direction: column; gap: 1.25rem; }
+
+    .success-banner {
+      background: var(--good-bg); border: 1px solid #cfe0d5;
+      border-left: 3px solid var(--good);
+      border-radius: 3px; padding: 0.8rem 1rem;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .success-banner svg { width: 18px; height: 18px; color: var(--good); flex-shrink: 0; }
+
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      border: 1px solid var(--rule); border-radius: 3px; overflow: hidden;
+    }
+    /* Hairlines between cells instead of gaps - reads like a spec sheet. */
+    .stat-card {
+      padding: 0.85rem 0.9rem;
+      border-right: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      background: var(--paper);
+    }
+    .stat-card:nth-child(3n) { border-right: none; }
+    .stat-card:nth-child(n+4) { border-bottom: none; }
+
+    .stat-val { font: 600 1.35rem/1.2 var(--mono); color: var(--ink); }
+    .stat-label { font-size: 0.75rem; color: var(--ink-dim); margin-top: 0.15rem; }
+
+    /* --- footer notes --- */
+    .features-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 0 2rem;
+    }
+    .feature-item { padding: 0.9rem 0; border-top: 1px solid var(--rule); }
+    .feature-title { font-size: 0.875rem; font-weight: 600; margin-bottom: 0.2rem; }
+    .feature-desc  { font-size: 0.825rem; color: var(--ink-mid); line-height: 1.5; }
+
+    @media (max-width: 640px) {
+      body { padding: 1.5rem 1rem 3rem; }
+      h1 { font-size: 1.4rem; }
+      .card { padding: 1.1rem; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .stat-card:nth-child(3n) { border-right: 1px solid var(--rule); }
+      .stat-card:nth-child(2n) { border-right: none; }
+      .stat-card:nth-child(n+4) { border-bottom: 1px solid var(--rule); }
+      .stat-card:nth-child(n+5) { border-bottom: none; }
+      .features-grid { grid-template-columns: 1fr; }
+    }
+
+    .banner-title { font-weight: 600; font-size: 0.95rem; }
+    .banner-sub   { font: 12px var(--mono); color: var(--ink-mid); margin-top: 0.1rem; }
+
+    /* --- measured accuracy table --- */
+    .section-label {
+      font: 500 11px/1 var(--mono); letter-spacing: 0.09em;
+      text-transform: uppercase; color: var(--ink-dim); margin-bottom: 0.5rem;
+    }
+    .lede { font-size: 0.875rem; color: var(--ink-mid); margin-bottom: 1rem; max-width: 62ch; }
+    .footnote { font-size: 0.8rem; color: var(--ink-dim); margin-top: 0.9rem; max-width: 66ch; }
+
+    .scroll-x { overflow-x: auto; }
+
+    table.scores { width: 100%; border-collapse: collapse; font-size: 0.875rem; min-width: 26rem; }
+    table.scores th {
+      text-align: right; font-weight: 500; color: var(--ink-dim);
+      padding: 0 0.5rem 0.4rem; border-bottom: 1px solid var(--rule-dk);
+    }
+    table.scores th:first-child, table.scores td:first-child { text-align: left; padding-left: 0; }
+    table.scores td {
+      text-align: right; padding: 0.45rem 0.5rem;
+      border-bottom: 1px solid var(--rule); font-family: var(--mono);
+    }
+    table.scores td:first-child { font-family: inherit; }
+    table.scores tr:last-child td { border-bottom: none; }
+    table.scores .lead { color: var(--good); font-weight: 600; }
+
+    /* --- per-type breakdown --- */
+    .bd-row { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.3rem; font-size: 0.85rem; }
+    .bd-name { width: 11rem; flex-shrink: 0; color: var(--ink-mid); }
+    .bd-track { flex: 1; height: 6px; background: #ebe9e2; border-radius: 1px; overflow: hidden; }
+    .bd-fill { height: 100%; background: var(--accent); }
+    .bd-num { width: 2.5rem; text-align: right; font-family: var(--mono); font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>PII redaction tool</h1>
+            <p class="subtitle">
+                Replaces personal data in a Word document with consistent fake
+                values and writes back the same file — same fonts, tables,
+                images and page breaks.
+            </p>
+        </header>
+
+        <!-- Main Workspace Card -->
+        <div class="card">
+            
+            <!-- Upload Form -->
+            <form id="redactForm" enctype="multipart/form-data">
+                <div class="upload-zone" id="dropZone">
+                    <div class="upload-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                    </div>
+                    <div class="upload-title">Drop your document here</div>
+                    <div class="upload-desc">Select or drag a prospectus or corporate document to redact</div>
+                    <div class="file-types">
+                        <span class="chip">Word (.docx)</span>
+                    </div>
+                    <input type="file" id="fileInput" name="file" accept=".docx">
+                </div>
+
+                <!-- File Preview (Visible when selected) -->
+                <div class="file-preview" id="filePreview">
+                    <div class="file-info">
+                        <div class="file-icon-badge" id="fileBadge">DOC</div>
+                        <div>
+                            <div class="file-name" id="fileName">document.docx</div>
+                            <div class="file-size" id="fileSize">0 KB</div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-remove" id="btnRemove">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <button type="submit" class="btn-submit" id="btnSubmit" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    Redact Sensitive PII
+                </button>
+            </form>
+
+            <!-- Processing / Spinner State -->
+            <div class="processing-state" id="processingState">
+                <div class="spinner"></div>
+                <div class="status-msg">Analyzing Document PII</div>
+                <div class="status-sub">Recovering table text, anonymizing names, personal emails and private websites, then applying disclosure allow-lists...</div>
+            </div>
+
+            <!-- Result State -->
+            <div class="result-state" id="resultState">
+                <div class="success-banner">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                        <div class="banner-title">Redaction complete</div>
+                        <div class="banner-sub" id="resultFilename">redacted_document.docx</div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-val" id="statDetections">0</div>
+                        <div class="stat-label">Entities Redacted</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-val" id="statMapped">0</div>
+                        <div class="stat-label">Distinct Identities</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-val" id="statReplacements">0</div>
+                        <div class="stat-label">Replacements Written</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-val" id="statSuppressed">0</div>
+                        <div class="stat-label">Deliberately Kept</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-val" id="statTerms">0</div>
+                        <div class="stat-label">Glossary Terms Learned</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-val" id="statImages">0</div>
+                        <div class="stat-label">Images Redacted</div>
+                    </div>
+                </div>
+
+                <!-- Per-type breakdown, rendered from entity_counts. This is
+                     the most informative part of the result: it shows what the
+                     tool actually found, by kind, rather than one total. -->
+                <div id="typeBreakdown" style="margin-top:1.25rem;"></div>
+
+                <div class="policy-note">
+                    <strong>Deliberately kept</strong> counts spans the models proposed and the
+                    policy refused — the document's own defined terms (ASBA, QIB, Working Day),
+                    public regulators (SEBI, BSE, NSE, RoC), the expansions behind its
+                    abbreviations, field captions like “Telephone”, bare city names,
+                    transaction references such as order or ticket numbers, section headings,
+                    and any phrase the document itself writes in lower case
+                    somewhere (a proper noun never is). That number is where precision comes
+                    from; a tool that redacts everything scores perfect recall and destroys the
+                    document.
+                </div>
+
+                <div class="policy-note" style="margin-top:0.75rem;">
+                    <strong>Disclosure policy:</strong> public regulators and exchanges stay
+                    visible. Every private party — banks, brokers, registrars, advisers — is
+                    redacted like any other company: name, address, CIN, website, e-mail, its
+                    logo, and any hyperlink pointing at it. Identity documents embedded as
+                    images are OCR'd in English and Devanagari, their QR codes destroyed.
+                </div>
+
+                <a href="#" id="btnDownloadLink" class="btn-download" download>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Download Redacted Document (.docx)
+                </a>
+
+                <button type="button" class="btn-reset" id="btnReset">Redact Another Document</button>
+            </div>
+
+        </div>
+
+        <!-- Measured performance, from the checked-in evaluation reports -->
+        <div class="card" style="padding:1.75rem 2rem;">
+            <div class="section-label">Measured accuracy</div>
+            <p class="lede">
+                Scored against hand-built ground truth. <em>Coverage</em> is the number that
+                matters for redaction: whether a span was caught at all, regardless of which
+                type it was labelled — a span nobody detected is what leaks.
+            </p>
+            <div class="scroll-x">
+            <table class="scores">
+                <thead>
+                    <tr>
+                        <th>Document</th>
+                        <th>Precision</th>
+                        <th>Recall</th>
+                        <th>F1</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Supplied prospectus (126 pages)</td>
+                        <td>0.720</td>
+                        <td class="lead">0.939</td>
+                        <td>0.815</td>
+                    </tr>
+                    <tr>
+                        <td>Unseen synthetic prospectus</td>
+                        <td>0.917</td>
+                        <td class="lead">1.000</td>
+                        <td>0.957</td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+            <p class="footnote">
+                The second document was generated with ground truth known by construction, on
+                vocabulary the tool has never seen — it is the check that the rules generalise
+                rather than fitting this one file. Structure is verified separately: the output
+                carries exactly as many text-bearing paragraphs as the source.
+            </p>
+        </div>
+
+        <!-- Technical Features -->
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="feature-title">Consistent Caching</div>
+                <div class="feature-desc">Ensures the exact same person name maps to the same fake identity across all 100+ pages.</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-title">Reads the Glossary Before Deciding</div>
+                <div class="feature-desc">The document's own “Definitions and Abbreviations” tables are parsed at run time — every one of them, keyed on row shape rather than on a named table — so its vocabulary is known before any redaction happens. On the supplied prospectus that is 599 terms.</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-title">Definitions Survive, Parties Do Not</div>
+                <div class="feature-desc">An abbreviation's expansion is vocabulary and stays — whole and in part, so a phrase lifted from the middle of one is safe too: “PM-KUSUM — Pradhan Mantri Kisan Urja Suraksha evam Utthaan Mahabhiyan Yojana”. Two guards keep that narrow. “SBI — State Bank of India” is an acronym row, and the bank is still redacted. And the glossary is where the <em>parties</em> are defined too, so only acronym rows qualify — which is what keeps every promoter redactable.</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-title">Learns the Document's Own Vocabulary</div>
+                <div class="feature-desc">Indexes every phrase the file writes with a lower-case first letter, because a proper noun is capitalised wherever it appears. That is how “Delay in or inability of the vendors…” is known not to be a person's name — the same document says “any delay in placing the orders”. Derived per document, not a fixed stop-word list.</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-title">Headings Are Structure</div>
+                <div class="feature-desc">A section heading is recognised by repetition — a contents entry names a section that carries the same words as its title — or by a trailing page number, so “TABLE OF CONTENTS” is never mistaken for a company and the contents page survives intact.</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-title">Contextual DOB</div>
+                <div class="feature-desc">Only redacts dates associated with DOB keywords, preserving filing and FY dates.</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-title">Linked Website Anonymization</div>
+                <div class="feature-desc">Redacts private company URLs and domains using a consistent fake domain derived from the same company identity.</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-title">In-Place Rewriting</div>
+                <div class="feature-desc">Edits the original file in place: fonts, tables, images, headers and page breaks are preserved exactly, with only PII values changed.</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-title">Institutional Domain Policy</div>
+                <div class="feature-desc">Leaves regulator and exchange domains (sebi.gov.in, bseindia.com, nseindia.com) intact, while redacting every private counterparty domain — banks, brokers, registrars and advisers alike.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        // Friendly names for the entity types the pipeline reports. Anything
+        // not listed falls back to its raw type, so a newly added PII type
+        // shows up here without touching this file.
+        const TYPE_LABELS = {
+            PERSON: 'People', ORGANIZATION: 'Organisations', LOCATION: 'Addresses',
+            EMAIL_ADDRESS: 'E-mail addresses', PHONE_NUMBER: 'Phone numbers',
+            IN_AADHAAR: 'Aadhaar numbers', IN_PAN: 'PAN numbers',
+            IN_GSTIN: 'GSTIN', IN_IFSC: 'IFSC codes', IN_PASSPORT: 'Passport numbers',
+            IN_VOTER_ID: 'Voter IDs', CREDIT_CARD: 'Card numbers',
+            CORPORATE_ID: 'Corporate identity numbers', DATE_OF_BIRTH: 'Dates of birth',
+            WEB_ADDRESS: 'Websites', URL: 'Websites', IP_ADDRESS: 'IP addresses',
+            BANK_ACCOUNT: 'Bank accounts', IN_MOBILE: 'Mobile numbers'
+        };
+
+        function renderTypeBreakdown(counts) {
+            const host = document.getElementById('typeBreakdown');
+            const rows = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+            if (!rows.length) { host.innerHTML = ''; return; }
+            const max = rows[0][1];
+            host.innerHTML =
+                '<div class="section-label">What was found</div>' +
+                rows.map(([type, n]) => {
+                    const label = TYPE_LABELS[type] || type;
+                    const pct = Math.max(4, Math.round((n / max) * 100));
+                    return '<div class="bd-row">' +
+                        '<div class="bd-name">' + label + '</div>' +
+                        '<div class="bd-track"><div class="bd-fill" style="width:' + pct + '%"></div></div>' +
+                        '<div class="bd-num">' + n + '</div></div>';
+                }).join('');
+        }
+
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const filePreview = document.getElementById('filePreview');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const fileBadge = document.getElementById('fileBadge');
+        const btnRemove = document.getElementById('btnRemove');
+        const btnSubmit = document.getElementById('btnSubmit');
+        const redactForm = document.getElementById('redactForm');
+        const processingState = document.getElementById('processingState');
+        const resultState = document.getElementById('resultState');
+        const btnReset = document.getElementById('btnReset');
+
+        // Drag & Drop
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+            });
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length) {
+                fileInput.files = files;
+                handleFileSelect();
+            }
+        });
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFileSelect);
+
+        function handleFileSelect() {
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                fileName.textContent = file.name;
+                fileSize.textContent = (file.size / 1024).toFixed(1) + ' KB';
+                const ext = file.name.split('.').pop().toUpperCase();
+                fileBadge.textContent = ext.substring(0, 4);
+                
+                dropZone.style.display = 'none';
+                filePreview.style.display = 'flex';
+                btnSubmit.disabled = false;
+            }
+        }
+
+        btnRemove.addEventListener('click', () => {
+            fileInput.value = '';
+            filePreview.style.display = 'none';
+            dropZone.style.display = 'block';
+            btnSubmit.disabled = true;
+        });
+
+        // Form Submit
+        redactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!fileInput.files.length) return;
+
+            // UI transition
+            redactForm.style.display = 'none';
+            processingState.style.display = 'block';
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                const resp = await fetch('/redact', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await resp.json();
+
+                if (resp.ok && data.status === 'success') {
+                    // Populate results
+                    const s = data.summary;
+                    document.getElementById('resultFilename').textContent =
+                        data.output_filename + '  ·  ' + s.seconds + 's';
+                    document.getElementById('statDetections').textContent = s.entities_redacted;
+                    document.getElementById('statMapped').textContent = s.distinct_entities;
+                    document.getElementById('statReplacements').textContent = s.replacements;
+                    document.getElementById('statSuppressed').textContent = s.suppressed_by_policy;
+                    document.getElementById('statTerms').textContent = s.defined_terms_learned;
+                    document.getElementById('statImages').textContent = s.images_redacted || 0;
+
+                    renderTypeBreakdown(s.entity_counts || {});
+                    document.getElementById('btnDownloadLink').href = data.download_url;
+
+                    processingState.style.display = 'none';
+                    resultState.style.display = 'flex';
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to redact document.'));
+                    resetUI();
+                }
+            } catch (err) {
+                alert('Connection error: ' + err.message);
+                resetUI();
+            }
+        });
+
+        btnReset.addEventListener('click', resetUI);
+
+        function resetUI() {
+            fileInput.value = '';
+            filePreview.style.display = 'none';
+            dropZone.style.display = 'block';
+            btnSubmit.disabled = true;
+            redactForm.style.display = 'block';
+            processingState.style.display = 'none';
+            resultState.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
