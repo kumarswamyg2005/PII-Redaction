@@ -361,9 +361,17 @@ needs a signal the glossary cannot supply.
 
 ## Known limitations
 
-- **Precision 0.63** on the supplied document. Undefined domain vocabulary is
+- **Precision 0.72** on the supplied document. Undefined domain vocabulary is
   over-redacted. Next step: a document-frequency model of vocabulary that does
   not depend on the glossary.
+- **Newspaper names are redacted** — `Financial Express`, `Jansatta`,
+  `Loksatta` in the statutory publication clause. They are public media rather
+  than personal PII, so this costs precision. It is left alone deliberately:
+  the only fix is a hardcoded list of newspaper names, and every allow-list
+  here is either learned from the document or written as a category. The
+  surrounding text is untouched — *"Marathi being the regional language of
+  Maharashtra"* still reads correctly — so the clause loses its mastheads, not
+  its meaning.
 - **ALL-CAPS recall** is still weaker than title case after truecasing.
 - **PAN's final character** is an NSDL-internal check digit with no public
   algorithm, so PAN validation is structural only.

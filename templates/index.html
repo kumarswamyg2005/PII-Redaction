@@ -575,9 +575,28 @@
             try {
                 const resp = await fetch('/redact', {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    // Free ngrok answers un-flagged browser requests with an
+                    // HTML interstitial. You click through it for the page, but
+                    // this POST would get the same HTML back and json() would
+                    // fail on "<!DOCTYPE". The header opts the request out.
+                    // Harmless anywhere else - it is just an unknown header.
+                    headers: { 'ngrok-skip-browser-warning': '1' }
                 });
 
+                if (!resp.ok) {
+                    throw new Error(`server returned ${resp.status} ${resp.statusText}`);
+                }
+                const contentType = resp.headers.get('content-type') || '';
+                if (!contentType.includes('application/json')) {
+                    // Say what actually happened rather than letting json()
+                    // fail with a parser error that points at nothing useful.
+                    throw new Error(
+                        'Expected JSON but got ' + (contentType || 'no content-type') +
+                        '. If this is a tunnelled demo, the tunnel is answering ' +
+                        'instead of the app.'
+                    );
+                }
                 const data = await resp.json();
 
                 if (resp.ok && data.status === 'success') {
