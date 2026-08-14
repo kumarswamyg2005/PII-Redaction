@@ -1,8 +1,8 @@
 # Evaluation Report
 
 - **Document**: `synthetic_test.docx`
-- **Output**: `syn.docx`
-- **Runtime**: 1.4s
+- **Output**: `s.docx`
+- **Runtime**: 1.3s
 
 ## What the run did
 

@@ -2,7 +2,7 @@
 
 - **Document**: `Red Herring Prospectus.docx`
 - **Output**: `Red Herring Prospectus - REDACTED.docx`
-- **Runtime**: 87.1s
+- **Runtime**: 88.8s
 
 ## What the run did
 
@@ -74,33 +74,35 @@
 
 ### Missed PII (false negatives)
 
-| Type | Text |
+The shipped ground truth carries entity types and character offsets but not the values themselves, because a ground-truth file for a redaction task is itself a disclosure. A miss is therefore located rather than quoted; run against your own copy of the source to see the text at each offset.
+
+| Type | Where |
 |---|---|
-| LOCATION | `` |
-| LOCATION | `` |
-| PERSON | `` |
-| PERSON | `` |
-| PERSON | `` |
-| ORGANIZATION | `` |
-| ORGANIZATION | `` |
-| LOCATION | `` |
-| LOCATION | `` |
-| LOCATION | `` |
-| LOCATION | `` |
-| LOCATION | `` |
-| LOCATION | `` |
-| LOCATION | `` |
-| ORGANIZATION | `` |
-| ORGANIZATION | `` |
-| ORGANIZATION | `` |
-| ORGANIZATION | `` |
-| PERSON | `` |
-| ORGANIZATION | `` |
-| ORGANIZATION | `` |
-| PERSON | `` |
-| ORGANIZATION | `` |
-| LOCATION | `` |
-| LOCATION | `` |
+| LOCATION | characters 356–373 |
+| LOCATION | characters 443–467 |
+| PERSON | characters 779–798 |
+| PERSON | characters 6757–6777 |
+| PERSON | characters 9833–9852 |
+| ORGANIZATION | characters 9879–9899 |
+| ORGANIZATION | characters 9996–10039 |
+| LOCATION | characters 20676–20687 |
+| LOCATION | characters 21003–21022 |
+| LOCATION | characters 21410–21421 |
+| LOCATION | characters 23704–23721 |
+| LOCATION | characters 23822–23846 |
+| LOCATION | characters 24935–24952 |
+| LOCATION | characters 27535–27559 |
+| ORGANIZATION | characters 27640–27683 |
+| ORGANIZATION | characters 29261–29304 |
+| ORGANIZATION | characters 29871–29888 |
+| ORGANIZATION | characters 29923–29966 |
+| PERSON | characters 32148–32167 |
+| ORGANIZATION | characters 32237–32255 |
+| ORGANIZATION | characters 32311–32354 |
+| PERSON | characters 32748–32767 |
+| ORGANIZATION | characters 32827–32849 |
+| LOCATION | characters 32937–32954 |
+| LOCATION | characters 35811–35828 |
 
 ### What the false positives actually are
 

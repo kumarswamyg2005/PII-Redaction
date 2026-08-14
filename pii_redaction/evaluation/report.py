@@ -71,6 +71,21 @@ class Annotation:
     text: str = ""
 
 
+def _describe(annotation: "Annotation") -> str:
+    """
+    Where a missed annotation is, in a form safe to publish.
+
+    With the literal present the character shape is shown, which conveys the
+    kind of value without disclosing it. With offsets-only ground truth — how
+    this repository ships — there is nothing to mask, and an empty cell reads
+    as a broken report rather than a deliberate omission, so the offsets are
+    printed instead.
+    """
+    if annotation.text:
+        return f"`{mask(annotation.text)}`"
+    return f"characters {annotation.start}–{annotation.end}"
+
+
 @dataclass
 class Metrics:
     tp: int = 0
@@ -231,7 +246,9 @@ def score(
             metrics.tp += 1
         else:
             metrics.fn += 1
-            card.false_negatives.append((annotation.entity_type, annotation.text))
+            card.false_negatives.append(
+                (annotation.entity_type, _describe(annotation))
+            )
 
     for d_index, detection in enumerate(scoped):
         if d_index not in matched_detections:
@@ -383,9 +400,20 @@ def _metrics_section(
     ]
 
     if card.false_negatives:
-        lines += ["### Missed PII (false negatives)", "", "| Type | Text |", "|---|---|"]
-        for entity_type, text in card.false_negatives[:25]:
-            lines.append(f"| {entity_type} | `{mask(text)}` |")
+        lines += [
+            "### Missed PII (false negatives)",
+            "",
+            "The shipped ground truth carries entity types and character offsets"
+            " but not the values themselves, because a ground-truth file for a"
+            " redaction task is itself a disclosure. A miss is therefore located"
+            " rather than quoted; run against your own copy of the source to see"
+            " the text at each offset.",
+            "",
+            "| Type | Where |",
+            "|---|---|",
+        ]
+        for entity_type, where in card.false_negatives[:25]:
+            lines.append(f"| {entity_type} | {where} |")
         lines.append("")
     if card.false_positives:
         lines += _false_positive_buckets(card.false_positives, annotated_texts, policy)
