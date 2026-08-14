@@ -304,7 +304,7 @@
             <div class="processing-state" id="processingState">
                 <div class="spinner"></div>
                 <div class="status-msg">Analyzing Document PII</div>
-                <div class="status-sub">Recovering table text, anonymizing names, personal emails and private websites, then applying disclosure allow-lists...</div>
+                <div class="status-sub" id="statusSub">Starting…</div>
             </div>
 
             <!-- Result State -->
@@ -499,6 +499,7 @@
                 }).join('');
         }
 
+        const statusSub = document.getElementById('statusSub');
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
         const filePreview = document.getElementById('filePreview');
@@ -573,33 +574,19 @@
             formData.append('file', fileInput.files[0]);
 
             try {
-                const resp = await fetch('/redact', {
-                    method: 'POST',
-                    body: formData,
-                    // Free ngrok answers un-flagged browser requests with an
-                    // HTML interstitial. You click through it for the page, but
-                    // this POST would get the same HTML back and json() would
-                    // fail on "<!DOCTYPE". The header opts the request out.
-                    // Harmless anywhere else - it is just an unknown header.
-                    headers: { 'ngrok-skip-browser-warning': '1' }
-                });
-
-                if (!resp.ok) {
-                    throw new Error(`server returned ${resp.status} ${resp.statusText}`);
+                // The upload only *starts* the work and comes straight back
+                // with a job id; the result is collected by polling. A
+                // 126-page document takes around two minutes, and holding a
+                // connection open that long invites anything in the path — a
+                // tunnel, a proxy, the browser — to give up and lose the run.
+                const accepted = await api('/redact', { method: 'POST', body: formData });
+                if (accepted.status !== 'accepted' || !accepted.status_url) {
+                    throw new Error(accepted.error || 'the server did not accept the upload');
                 }
-                const contentType = resp.headers.get('content-type') || '';
-                if (!contentType.includes('application/json')) {
-                    // Say what actually happened rather than letting json()
-                    // fail with a parser error that points at nothing useful.
-                    throw new Error(
-                        'Expected JSON but got ' + (contentType || 'no content-type') +
-                        '. If this is a tunnelled demo, the tunnel is answering ' +
-                        'instead of the app.'
-                    );
-                }
-                const data = await resp.json();
 
-                if (resp.ok && data.status === 'success') {
+                const data = await waitForJob(accepted.status_url);
+
+                if (data.state === 'done') {
                     // Populate results
                     const s = data.summary;
                     document.getElementById('resultFilename').textContent =
@@ -625,6 +612,64 @@
                 resetUI();
             }
         });
+
+        /**
+         * One fetch wrapper for every call, so the ngrok header and the
+         * "did we actually get JSON" check live in one place.
+         */
+        async function api(url, options = {}) {
+            const resp = await fetch(url, {
+                ...options,
+                // Free ngrok answers un-flagged browser requests with an HTML
+                // interstitial. You click through it for the page, but an
+                // un-flagged fetch gets the same HTML and json() fails on
+                // "<!DOCTYPE". Harmless anywhere else — just an unknown header.
+                headers: { 'ngrok-skip-browser-warning': '1', ...(options.headers || {}) }
+            });
+            const contentType = resp.headers.get('content-type') || '';
+            if (!contentType.includes('application/json')) {
+                // Name what actually answered, rather than letting json() throw
+                // a parser error that points at nothing useful.
+                throw new Error(
+                    'expected JSON but got ' + (contentType || 'no content-type') +
+                    (resp.status ? ' (HTTP ' + resp.status + ')' : '') +
+                    '. If this is a tunnelled demo, something other than the app replied.'
+                );
+            }
+            return resp.json();
+        }
+
+        /**
+         * Poll until the job finishes. Transient failures are tolerated on
+         * purpose: a dropped poll is not a dropped job, and the work continues
+         * on the server whatever happens to any single request.
+         */
+        async function waitForJob(statusUrl) {
+            const started = Date.now();
+            let consecutiveFailures = 0;
+            for (;;) {
+                await new Promise(r => setTimeout(r, 2000));
+                let job;
+                try {
+                    job = await api(statusUrl);
+                    consecutiveFailures = 0;
+                } catch (err) {
+                    // Ten misses in a row (~20s) before giving up.
+                    if (++consecutiveFailures >= 10) throw err;
+                    continue;
+                }
+                if (job.state === 'done') return job;
+                if (job.state === 'error') throw new Error(job.error || 'redaction failed');
+                if (job.state === 'unknown') throw new Error('the server forgot this job');
+
+                const elapsed = job.elapsed != null
+                    ? job.elapsed
+                    : Math.round((Date.now() - started) / 1000);
+                statusSub.textContent =
+                    'Working — ' + Math.round(elapsed) + 's elapsed. A 126-page ' +
+                    'document takes around two minutes; you can leave this tab open.';
+            }
+        }
 
         btnReset.addEventListener('click', resetUI);
 

@@ -42,4 +42,16 @@ RUN python -c "from gliner import GLiNER; GLiNER.from_pretrained('knowledgator/g
 COPY --chown=user . .
 
 EXPOSE 7860
-CMD ["gunicorn", "--bind", "0.0.0.0:7860", "--workers", "1", "--timeout", "600", "app:app"]
+
+# One worker, several threads. The worker count stays at one deliberately: each
+# worker loads its own copy of the ~500 MB zero-shot model, so a second one
+# doubles the memory for no gain on a laptop. But a single *sync* worker serves
+# exactly one request at a time, and a 126-page document occupies it for well
+# over a minute — during which the page itself, the health check and any second
+# upload are all refused, which a tunnel reports to the browser as 503.
+# Threads share the loaded model and keep the app answering while a long job
+# runs. The 600s timeout is for the job, not the connection.
+CMD ["gunicorn", "--bind", "0.0.0.0:7860", \
+     "--worker-class", "gthread", "--workers", "1", "--threads", "8", \
+     "--timeout", "600", "--graceful-timeout", "30", \
+     "--access-logfile", "-", "app:app"]
