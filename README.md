@@ -4,6 +4,16 @@ Reads a `.docx`, replaces every piece of personally identifiable information
 with a consistent fake value, and writes back **the same document** — same
 fonts, tables, images, headers and page breaks, byte-identical structure.
 
+**Live demo:** https://unsaved-deodorize-copious.ngrok-free.dev
+
+> Hosted from a laptop through an ngrok tunnel, so it answers only while that
+> machine is awake and online — treat it as a demo window, not an uptime
+> claim. If it does not load, everything it shows is reproducible locally in
+> two commands (see [Running it](#running-it)); nothing about the results
+> depends on the tunnel. Upload `synthetic_test.docx` for a result in seconds;
+> a 126-page prospectus takes around two minutes, and the page counts the
+> seconds up rather than leaving you guessing.
+
 ```bash
 # Runs on a clean clone — the synthetic document ships with the repo.
 python -m pii_redaction synthetic_test.docx out.docx \
@@ -328,6 +338,19 @@ allows one) as the second argument; without it ngrok issues a fresh random URL
 on every restart, which is useless in anything already sent to somebody.
 
 One-time: sign up at ngrok, then `ngrok config add-authtoken <token>`.
+
+The container serves through gunicorn with **one worker and several threads**.
+The worker count is deliberate — each worker loads its own copy of the ~500 MB
+zero-shot model — and so is the threading: a single *sync* worker serves one
+request at a time, so a two-minute document blocked the page, the health check
+and every other upload, which a tunnel reports to the browser as a 503.
+
+Uploads are handled off the request. `POST /redact` starts a job and returns
+`202` with an id; the client polls `GET /status/<id>`, which reports elapsed
+seconds while the job runs. No connection is held open for the length of the
+work, so nothing in the path — tunnel, proxy or browser — can time out and lose
+a run. The job table lives in memory, which is why the worker count must stay
+at one.
 
 Equivalent by hand:
 
